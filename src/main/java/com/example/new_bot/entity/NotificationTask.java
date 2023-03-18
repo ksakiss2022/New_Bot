@@ -1,3 +1,4 @@
+
 package com.example.new_bot.entity;
 
 import jakarta.persistence.*;

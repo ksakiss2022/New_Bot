@@ -1,9 +1,8 @@
+
 package com.example.new_bot.listener;
 
 import com.example.new_bot.entity.NotificationTask;
 import com.example.new_bot.service.NotificationTaskService;
-
-
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
@@ -24,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
 @Component
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final Pattern NOTIFICATION_TASK_PATTERN = Pattern.compile(
@@ -32,22 +30,23 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     private static final Logger LOG = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     private final TelegramBot telegramBot;
-   private final NotificationTaskService notificationTaskService;
+    private final NotificationTaskService notificationTaskService;
 
 //    @Autowired
 //   private  final TelegramBot telegramBot;
 
 
-public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskService notificationTaskService){
-    this.telegramBot=telegramBot;
-    this.notificationTaskService = notificationTaskService;
-}
+    public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskService notificationTaskService) {
+        this.telegramBot = telegramBot;
+        this.notificationTaskService = notificationTaskService;
+    }
+
     @PostConstruct
     public void init() {
         telegramBot.setUpdatesListener(this);
     }
 
-     private long lastProcessedMessageId = 0;
+    private long lastProcessedMessageId = 0;
 //
 //    @Override
 //    public int process(List<Update> updates) {
@@ -78,8 +77,8 @@ public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskServi
                     if (matcher.find()) {
                         LocalDateTime localDateTime = parse(matcher.group(1));
                         if (!Objects.isNull(localDateTime)) {
-                            SendMessage sendMessage = new SendMessage(chatId,"Некорректный формат даты и /или времени");
-                        }else {
+                            SendMessage sendMessage = new SendMessage(chatId, "Некорректный формат даты и /или времени");
+                        } else {
                             String txt = matcher.group(2);
                             NotificationTask notificationTask = new NotificationTask();
                             notificationTask.setId(chatId);
@@ -87,22 +86,22 @@ public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskServi
                             notificationTask.setNotificationDateTime(localDateTime);
                             notificationTaskService.addNotificationTask(notificationTask);
                             //   }
-                        //} else {
-                          //  telegramBot.execute(new SendMessage(chatId, "Некорректный формат даты и /или времени"));
+                            //} else {
+                            //  telegramBot.execute(new SendMessage(chatId, "Некорректный формат даты и /или времени"));
                         }
                     } else {
                         SendMessage sendMessage = new SendMessage(chatId,
-                                        "Некорректный формат сообщения");
+                                "Некорректный формат сообщения");
                     }
                 }
             });
         } catch (Exception e) {
-          LOG.error(e.getMessage(),e);
+            LOG.error(e.getMessage(), e);
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-//        private notificationTask pars(String s) {
+    //        private notificationTask pars(String s) {
 //        LocalDateTime dateTime = LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 //        String massage = s.substring(s.lastIndexOf(":") + 3);
 //        notificationTask example = new notificationTask();
