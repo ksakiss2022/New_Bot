@@ -2,12 +2,15 @@ package com.example.new_bot.timer;
 
 import com.example.new_bot.service.NotificationTaskService;
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.BaseResponse;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class NotificationTaskTimer {
+
     private final NotificationTaskService notificationTaskService;
 
     private final TelegramBot telegramBot;
@@ -28,5 +31,14 @@ public class NotificationTaskTimer {
             );
             notificationTaskService.deleteTask(notificationTask);
         });
+    }
+
+
+    private BaseResponse sendMessage(long chatId, String text) {
+        SendMessage request = new SendMessage(chatId, text)
+                .parseMode(ParseMode.HTML)
+                .disableWebPagePreview(true)
+                .disableNotification(true);
+        return telegramBot.execute(request);
     }
 }

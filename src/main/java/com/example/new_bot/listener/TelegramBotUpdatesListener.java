@@ -1,40 +1,31 @@
 
 package com.example.new_bot.listener;
 
-import com.example.new_bot.entity.NotificationTask;
+import com.example.new_bot.model.NotificationTask;
 import com.example.new_bot.service.NotificationTaskService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
-
+import lombok.extern.log4j.Log4j;
 import org.slf4j.LoggerFactory;
-import org.springframework.javapoet.ClassName;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 
-import static java.time.LocalDateTime.parse;
-
-@Component
+@Log4j
+@Controller
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final Pattern NOTIFICATION_TASK_PATTERN = Pattern.compile(
             "([\\d\\\\.:\\s]{16})(\\s)([]А-яA-z\\s\\d,.!?;]+)");
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-    private static final Logger LOG = (Logger) LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
-
-    private final TelegramBot telegramBot;
+       private final TelegramBot telegramBot;
     private final NotificationTaskService notificationTaskService;
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskService notificationTaskService) {
@@ -47,45 +38,58 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         telegramBot.setUpdatesListener(this);
     }
 
-
+    //
     @Override
     public int process(List<Update> updates) {
+        // обрабатывает полученные обновления от Telegram Bot API
+        // и вызывает метод accept(Update update) для каждого обновления.
         try {
-            updates.forEach(update -> {
-                LOG.info("Processing update:{}");
-                String text = update.message().text();
-                Long chatId = update.message().chat().id();
-                if ("/start".equals(text)) {
-                    SendMessage sendMessage = new SendMessage(chatId,
-                            "Для планирования задачи отправьте её в формате:\n*01.01.2022 20:00 Сделать домашнюю работу*");
-                    sendMessage.parseMode(ParseMode.Markdown);
-                    telegramBot.execute(sendMessage);
-                } else if (text != null) {
-                    Matcher matcher = NOTIFICATION_TASK_PATTERN.matcher(text);
-                    if (matcher.find()) {
-                        LocalDateTime localDateTime = parse(matcher.group(1));
-                        if (!Objects.isNull(localDateTime)) {
-                            SendMessage sendMessage = new SendMessage(chatId, "Некорректный формат даты и /или времени");
-                        } else {
-                            String txt = matcher.group(2);
-                            NotificationTask notificationTask = new NotificationTask();
-                            notificationTask.setId(chatId);
-                            notificationTask.setMessage(txt);
-                            notificationTask.setNotificationDateTime(localDateTime);
-                            notificationTaskService.addNotificationTask(notificationTask);
-                            //   }
-                            //} else {
-                            //  telegramBot.execute(new SendMessage(chatId, "Некорректный формат даты и /или времени"));
-                        }
-                    } else {
-                        SendMessage sendMessage = new SendMessage(chatId,
-                                "Некорректный формат сообщения");
-                    }
-                }
-            });
+            updates.forEach(this::accept);
         } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            e.printStackTrace();
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    void accept(Update update) {
+        log.debug("Processing update: " + update);
+        String message = update.message().text();
+        // получает текст сообщения от пользователя
+        // проверяем, что сообщение не является картинкой
+
+        if (update.message().photo() != null
+                || update.message().sticker() != null
+                || update.message().video() != null
+                || update.message().audio() != null) {
+            SendMessage errorMessage = new SendMessage(update.message().chat().id(),
+                    "Извините, но я умею обрабатывать только текст.");
+            telegramBot.execute(errorMessage);
+            return;
+        }
+
+        Matcher matcher = NOTIFICATION_TASK_PATTERN.matcher(message);
+        if (matcher.matches()) {
+            String date = matcher.group(1);
+            String item = matcher.group(3);
+            final LocalDateTime parseDate = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+            // Создаем объект Task и заполняем его поля
+            NotificationTask task = new NotificationTask();
+            task.setId(update.message().messageId());
+   //         task.setUserId(update.message().chat().id());
+            task.setMessage(item);
+            task.setNotificationDateTime(parseDate);
+            task.setUserId(update.message().from().id());
+            // Сохраняем задачу в базе данных
+            notificationTaskService.save(task);
+            SendMessage confirmMessage = new SendMessage(task.getUserId(),
+                    "Новое задание добавлено:\n" + task.getMessage()
+                            + "\n на дату: \n" + task.getNotificationDateTime());
+            telegramBot.execute(confirmMessage);
+        } else {
+            SendMessage errorMessage = new SendMessage(update.message().chat().id(),
+                    "Неверный формат сообщения. Правильный формат: " +
+                            "[дата в формате dd.MM.yyyy HH:mm] [текст задачи]");
+            telegramBot.execute(errorMessage);
+        }
     }
 }

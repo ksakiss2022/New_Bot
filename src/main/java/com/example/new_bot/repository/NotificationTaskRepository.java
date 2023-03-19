@@ -1,9 +1,8 @@
 package com.example.new_bot.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.new_bot.entity.NotificationTask;
+import com.example.new_bot.model.NotificationTask;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 

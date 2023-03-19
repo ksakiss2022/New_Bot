@@ -1,12 +1,17 @@
-
-package com.example.new_bot.entity;
+package com.example.new_bot.model;
 
 import jakarta.persistence.*;
-
+import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "notification_tasks")
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "notification_task_name")
 public class NotificationTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,9 +19,7 @@ public class NotificationTask {
     @Column(nullable = false)
     private String message;
     @Column(name = "user_id", nullable = false)
-    private long userId;
-
-
+    private Long userId;
     @Column(name = "notification_date_time", nullable = false)
     private LocalDateTime notificationDateTime;
 
@@ -50,5 +53,18 @@ public class NotificationTask {
 
     public void setNotificationDateTime(LocalDateTime notificationDateTime) {
         this.notificationDateTime = notificationDateTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotificationTask that = (NotificationTask) o;
+        return id == that.id && message.equals(that.message) && userId.equals(that.userId) && notificationDateTime.equals(that.notificationDateTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, message, userId, notificationDateTime);
     }
 }
