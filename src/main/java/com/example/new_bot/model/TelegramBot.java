@@ -10,8 +10,7 @@ import java.io.Serializable;
 
 
 public class TelegramBot implements Serializable {
-    //implements Serializable
-    TelegramBot bot = new TelegramBot("BOT_TOKEN");
+    //   TelegramBot bot = new TelegramBot("BOT_TOKEN");
     private String token;
     private TelegramBotClient api;
     private FileApi fileApi;

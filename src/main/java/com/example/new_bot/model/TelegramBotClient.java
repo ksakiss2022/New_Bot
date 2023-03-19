@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TelegramBotClient {
+
     private final OkHttpClient client;
     private OkHttpClient clientWithTimeout;
     private final Gson gson;
