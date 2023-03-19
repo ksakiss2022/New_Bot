@@ -1,4 +1,3 @@
-
 package com.example.new_bot.configuration;
 
 import com.pengrad.telegrambot.TelegramBot;

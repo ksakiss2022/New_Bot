@@ -1,5 +1,4 @@
 package com.example.new_bot.model;
-
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

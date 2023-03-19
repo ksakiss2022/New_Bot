@@ -1,4 +1,3 @@
-
 package com.example.new_bot.listener;
 
 import com.example.new_bot.model.NotificationTask;
@@ -9,15 +8,11 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j;
-import org.slf4j.LoggerFactory;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 
 @Log4j

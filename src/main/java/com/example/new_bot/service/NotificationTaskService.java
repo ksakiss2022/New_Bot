@@ -1,5 +1,4 @@
 package com.example.new_bot.service;
-
 import com.example.new_bot.model.NotificationTask;
 import com.example.new_bot.repository.NotificationTaskRepository;
 import jakarta.transaction.Transactional;
