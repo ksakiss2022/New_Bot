@@ -1,4 +1,5 @@
 package com.example.new_bot.timer;
+
 import com.example.new_bot.service.NotificationTaskService;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.ParseMode;
@@ -33,11 +34,11 @@ public class NotificationTaskTimer {
     }
 
 
-    private BaseResponse sendMessage(long chatId, String text) {
-        SendMessage request = new SendMessage(chatId, text)
-                .parseMode(ParseMode.HTML)
-                .disableWebPagePreview(true)
-                .disableNotification(true);
-        return telegramBot.execute(request);
-    }
+        private BaseResponse sendMessage(long chatId, String text) {
+            SendMessage request = new SendMessage(chatId, text)
+                    .parseMode(ParseMode.HTML)
+                    .disableWebPagePreview(true)
+                    .disableNotification(true);
+            return telegramBot.execute(request);
+        }
 }

@@ -7,7 +7,7 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.log4j.Log4j;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -15,13 +15,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Controller;
 
-@Log4j
+
 @Controller
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final Pattern NOTIFICATION_TASK_PATTERN = Pattern.compile(
             "([\\d\\\\.:\\s]{16})(\\s)([]А-яA-z\\s\\d,.!?;]+)");
        private final TelegramBot telegramBot;
     private final NotificationTaskService notificationTaskService;
+
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskService notificationTaskService) {
         this.telegramBot = telegramBot;
@@ -44,7 +45,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     void accept(Update update) {
-        log.debug("Processing update: " + update);
+        // LOG.info("Processing update: " + update);
         String message = update.message().text();
         if (update.message().photo() != null
                 || update.message().sticker() != null
