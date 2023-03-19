@@ -11,11 +11,11 @@ public class NotificationTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    @Column(nullable = false)
+    private String message;
     @Column(name = "user_id", nullable = false)
     private long userId;
-    @Column(nullable = false)
-    private String massage;
+
 
     @Column(name = "notification_date_time", nullable = false)
     private LocalDateTime notificationDateTime;
@@ -36,12 +36,12 @@ public class NotificationTask {
         this.userId = userId;
     }
 
-    public String getMassage() {
-        return massage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMassage(String text) {
-        this.massage = text;
+    public void setMessage(String text) {
+        this.message = text;
     }
 
     public LocalDateTime getNotificationDateTime() {

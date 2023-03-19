@@ -12,9 +12,9 @@ import java.util.List;
 
 @Service
 public class NotificationTaskService {
-    private final NotificationTaskRepository notificationTaskRepository;
+    private NotificationTaskRepository notificationTaskRepository;
 
-    public NotificationTaskService(NotificationTaskRepository notificationTaskRepository) {
+    public NotificationTaskService() {
         this.notificationTaskRepository = notificationTaskRepository;
     }
 
@@ -22,7 +22,7 @@ public class NotificationTaskService {
     public void addNotificationTask(LocalDateTime localDateTime, String massage, Long userId) {
         NotificationTask notificationTask = new NotificationTask();
         notificationTask.setNotificationDateTime(localDateTime);
-        notificationTask.setMassage(massage);
+        notificationTask.setMessage(massage);
         notificationTask.setUserId(userId);
         notificationTaskRepository.save(notificationTask);
     }
@@ -38,5 +38,8 @@ public class NotificationTaskService {
     }
 
     public void addNotificationTask(NotificationTask notificationTask) {
+    }
+
+    public void save(NotificationTask task) {
     }
 }

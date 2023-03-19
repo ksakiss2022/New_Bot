@@ -24,7 +24,7 @@ public class NotificationTaskTimer {
             telegramBot.execute(
 
                     new SendMessage(notificationTask.getUserId(),
-                            "Вы просили напомнить об этом:" + notificationTask.getMassage())
+                            "Вы просили напомнить об этом:" + notificationTask.getMessage())
             );
             notificationTaskService.deleteTask(notificationTask);
         });
